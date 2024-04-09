@@ -1,0 +1,4 @@
+env/
+imeireader/__pycache__/
+imeireader/migrations/
+core/__pycache__/
