@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block imports %}
+{% endblock %}
+
+{% block content %}
+
+<div class="log-box w-100 p-4" style="max-width: 400px;" id="menu-login">
+    <div class=" mb-3">
+        <span class="text-primary fw-bold fs-2">IMEIGuard </span>
+    </div>
+    <h5 class="text-secondary p-0 m-0">Bem-vindo de volta!</h5>
+
+    <form action="{% url 'login' %}" method="POST" class="mt-2">
+        {% csrf_token %}
+        <label for="id_username">Usuário:</label>
+        <input class="form-control" type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" id="id_username">
+
+        <label for="id_password">Senha:</label>
+        <input class="form-control" type="password" name="password" autocomplete="current-password" required="" id="id_password">
+        <div class="d-flex justify-content-end"><a href="" class="text-decoration-none text-primary">esqueceu a senha?</a></div>
+        <input type="hidden" name="next" value="{{ request.GET.next }}">
+        <button type="submit" class="btn mt-4 w-100 btn-primary">Acessar conta</button>
+    </form>
+    {% if form.errors %}
+    <div class="alert alert-danger mb-0 mt-4 p-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill mx-2"></i>
+        Usuário ou senha incorretos.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

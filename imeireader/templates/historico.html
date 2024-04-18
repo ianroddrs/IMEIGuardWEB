@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block imports %}
+{% endblock %}
+{% block content %}
+<h2 class="text-dark my-4">Historico do dia</h2>
+<div class="d-flex flex-column w-100 align-items-center px-4">
+    {% if historico %}
+        <div class="mt-2 p-1 w-100 text-dark" style="max-width: 500px;">
+            <div class="d-flex flex-row justify-content-between">
+                <div><strong>IMEI</strong></div>
+                <div><strong>Hora</strong></div>
+            </div>
+        </div>
+        {% for h in historico %}
+            <a href="/resultado/?imei={{h.pesquisa}}" class="m-2 p-3 border w-100 bg-light text-dark text-decoration-none" style="max-width: 500px;">
+                <div class="d-flex flex-row justify-content-between">
+                    <div>
+                        {{h.pesquisa}}
+                    </div>
+                    <!-- {{h.data_pesquisa|date:"d/m/Y"}} -->
+                    {{h.data_pesquisa|date:"H:i"}}
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <div class="text-secondary">
+            Nenhum histórico registrado
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

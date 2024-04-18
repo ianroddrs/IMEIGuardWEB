@@ -1,0 +1,7 @@
+#pesquisa input:focus {
+    outline: none;
+}
+
+#reader video, #reader #qr-shaded-region{
+    border-radius: 6px;
+}

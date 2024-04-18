@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block imports %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center p-3">
+    <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+    {% if erro %}
+        {{erro}}
+    {% else %}
+        <span class="text-center">
+            Foram encontrados {{resultado|length}} registro(s) para o <strong>IMEI</strong> {{ request.GET.imei }}
+        </span>
+    {% endif %}
+</div>
+
+<hr class="w-75">
+
+
+
+{% for boletim in resultado %}
+<div class="border shadow rounded text-dark my-2 w-75" style="max-width: 400px;">
+    <div class="bg-danger text-white p-2 rounded-top text-center">
+        {{boletim.registros}}
+    </div>
+    <div class="p-3">
+        <div>
+            <strong>Boletim:</strong> {{boletim.nro_bop}}
+        </div>
+        <div>
+            <strong>Data registro:</strong> {{boletim.data_registro|date:"d/m/Y" }}
+        </div>
+        <div>
+            <strong>Data fato:</strong> {{boletim.data_fato|date:"d/m/Y"}}
+        </div>
+        <div>
+            <strong>Vítima</strong> {{boletim.vit_nome}}
+        </div>
+    </div>
+</div>
+{% empty %}
+<a href="{% url 'home' %}" class="btn btn-danger mt-5 mx-2 mt-3">
+    Nova pesquisa
+</a>
+{% endfor %}
+
+{% endblock %}

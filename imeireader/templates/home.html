@@ -1,50 +1,44 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{% static 'js/html5-qrcode.min.js' %}" defer type="text/javascript"></script>
-    <script src="{% static 'js/imeireader.js' %}" defer type="text/javascript"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}" defer type="text/javascript"></script>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
-    <style>
+{% block imports %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<script src="{% static 'js/html5-qrcode.min.js' %}" defer type="text/javascript"></script>
+<script src="{% static 'js/home.js' %}" defer type="text/javascript"></script>
+{% endblock %}
 
-
-    </style>
-    <title>Document</title>
-</head>
-<body class="bg-dark">
-    <main class="d-flex flex-column justify-content-center">
-        <nav class="navbar bg-dark fixed-top">
-            <div class="container-fluid">
-              <a class="navbar-brand text-white" href="#">IMEIScan</a>
-              <button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <i class="bi bi-list text-white fs-3"></i>
-              </button>
-
-              <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
-                  <h5 class="offcanvas-title" id="offcanvasNavbarLabel">IMEIScan</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body">
-                  
-                </div>
-              </div>
-            </div>
-        </nav>
-
-
-        <div id="reader" width="100%" height="100%" class="bg-white"></div>
-
-
-        <div id="resultado" class="text-white fs-3 fixed-bottom text-center m-5">
-
+{% block content %}
+<form action="{% url 'resultado' %}" class="mx-3 text-center" id="pesquisa">
+    <h1 class="mb-5 text-center">Pesquisar IMEI</h1>
+    <div class="input-group form-control rounded-pill">
+        <div class="d-flex flex-row align-items-center rounded-pill">
+            <!-- <i class="bi bi-search fs-6 me-3 text-secondary"></i> -->
+            <span class="text-secondary me-2"> IMEI</span>
+            <input type="text" inputmode="numeric" oninput="mascara()" name="imei" required class="border-0 p-0 fs-5 w-100" id="imei-input">
+            <button type="button" class="btn text-center rounded-pill border-0 z-1" onclick="showScanner()">
+                <i class="bi bi-upc-scan fs-5 text-primary text-bold"></i>
+            </button>
+            <button type="submit" class="btn btn-primary px-3 rounded-pill">
+                <i class="bi bi-search fs-6"></i>
+                <!-- Pesquisar -->
+            </button>
         </div>
-    </main>
-
-</body>
-</html>
+    </div>
+</form>
+<container id="scanner-container" class='d-none w-100 h-100 position-absolute z-3 d-flex justify-content-center align-items-center'>
+    <modal class='bg-white w-100 mx-1 shadow border rounded p-3 pt-0 position-relative' style="max-width:500px;" id="modal-scan">
+        <div class="d-flex align-items-center justify-content-between position-relative my-3">
+            <span class="text-center text-secondary w-100">Escaneie do código de barras do IMEI</span>
+            <button type="button" onclick="ScannerBox('remove')" class="btn-close" aria-label="Close"></button>
+        </div>
+        <div id="reader" class="mx-3"></div>
+        <div id="resultado" class="d-none border rounded d-flex flex-row justify-content-center align-items-center mx-3 mt-3 p-2"></div>
+    </modal>
+    
+</container>
+<div class="d-flex justify-content-center align-items-center">
+    <a href="{% url 'historico' %}" class="text-secondary btn-sm mt-5 mx-2">
+        Historico de resultados
+    </a>
+</div>
+{% endblock %}
