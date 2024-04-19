@@ -6,12 +6,12 @@
 
 {% block content %}
 <div class="d-flex flex-column justify-content-center align-items-center p-3">
-    <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+    <i class="bi {% if resultado|length == 0 %} bi-check-circle-fill text-success{% else %}bi-exclamation-triangle-fill text-danger{% endif %}" style="font-size: 50px;"></i>
     {% if erro %}
         {{erro}}
     {% else %}
-        <span class="text-center">
-            Foram encontrados {{resultado|length}} registro(s) para o <strong>IMEI</strong> {{ request.GET.imei }}
+        <span class="text-center mt-2">
+            Foram encontrados <strong>{{resultado|length}}</strong> registro(s) para o <strong>IMEI</strong> {{ request.GET.imei }}
         </span>
     {% endif %}
 </div>
@@ -41,7 +41,7 @@
     </div>
 </div>
 {% empty %}
-<a href="{% url 'home' %}" class="btn btn-danger mt-5 mx-2 mt-3">
+<a href="{% url 'home' %}" class="btn btn-primary mt-5 mx-2 mt-3">
     Nova pesquisa
 </a>
 {% endfor %}

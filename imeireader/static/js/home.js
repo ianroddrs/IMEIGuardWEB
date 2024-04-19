@@ -42,11 +42,11 @@ function showScanner(){
                 console.error("Nenhuma câmera traseira encontrada.");
             }
         }
-        let text = ''
-        devices.forEach(element => {
-            text += `${element.label}\n`
-        });
-        alert(text)
+        // let text = ''
+        // devices.forEach(element => {
+        //     text += `${element.label}\n`
+        // });
+        // alert(text)
     }).catch(err => {
         console.error(err);
     });
@@ -56,7 +56,11 @@ function startScanner(cameraId){
 
     html5QrCode.start(
         cameraId,
-        {fps: 10, qrbox: calculateQrBoxSize(),aspectRatio: 1},
+        {
+            fps: 10, 
+            // qrbox: calculateQrBoxSize(),
+            aspectRatio: 0.5
+        },
         qrCodeMessage => {
             resultado = document.getElementById("resultado")
             resultado.classList.remove('d-none')
@@ -68,14 +72,14 @@ function startScanner(cameraId){
             
         }
     )
-    if (cameraIds.length > 1) {
+    if (cameraIds.length > 1
+    
+    
+    ) {
         setTimeout(function() {
             document.querySelector("#btn-switch")
             let btnSwitch = document.createElement('div')
-            btnSwitch.className = "w-100 position-absolute z-3 d-flex justify-content-center align-items-center"
-            btnSwitch.style.right = "0"
-            btnSwitch.style.left = "0"
-            btnSwitch.style.bottom = "20px"
+            btnSwitch.className = "w-100 p-2 bg-dark rounded-bottom d-flex justify-content-center align-items-center"
             btnSwitch.id = "btn-switch"
             btnSwitch.innerHTML = `<button type="button" onclick="switchCamera()" class="rounded-circle btn btn-light fs-2"><i class="bi bi-arrow-repeat"></i></button>`
             document.getElementById("reader").appendChild(btnSwitch)

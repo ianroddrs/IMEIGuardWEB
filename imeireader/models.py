@@ -159,7 +159,7 @@ class log_pesquisa(models.Model):
     usuario = models.ForeignKey(AuthUser,models.DO_NOTHING)
     pesquisa = models.CharField(max_length=20, blank=False, null=False)
     bop_resultado = models.CharField(max_length=20, blank=False, null=True)
-    data_pesquisa = models.DateTimeField(null=True,blank=True)
+    data_pesquisa = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         managed = False

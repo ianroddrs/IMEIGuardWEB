@@ -45,9 +45,8 @@ def resultado(request):
                     resultado_log = model_to_dict(i,fields=['nro_bop'])
                     list_bops.append(resultado_log['nro_bop'])
                 log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops)
-                print(datetime.datetime.now())
             else:
-                log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado= None)
+                log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None)
             log.save()
         else:
             erro = 'O termo pesquisado não é um IMEI'
@@ -57,7 +56,7 @@ def resultado(request):
         return render(request, 'resultado.html', {'erro': erro})
     except:
         erro = 'Ocorreu um erro desconhecido. Por favor contate a equipe de suporte'
-        log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado= None)
+        log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None)
         log.save()
         return render(request, 'resultado.html', {'erro': erro})
     return render(request, 'resultado.html', {'resultado': consulta})
@@ -66,6 +65,6 @@ def resultado(request):
 @login_required
 def historico(request):
     user = AuthUser.objects.get(id=request.user.id)
-    historico = log_pesquisa.objects.filter(usuario_id=user,data_pesquisa__lte=datetime.datetime.today()).order_by('-data_pesquisa')
-    print(historico)
+    historico = log_pesquisa.objects.filter(usuario_id=user,data_pesquisa__date=datetime.datetime.today().strftime("%Y-%m-%d")).order_by('-data_pesquisa')
+    print(datetime.datetime.today().strftime("%Y-%m-%d"))
     return render(request, 'historico.html',{'historico':historico})
