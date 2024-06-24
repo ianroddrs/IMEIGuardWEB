@@ -101,8 +101,8 @@ function addIMEI(code){
     formulario = document.getElementById('pesquisa')
     input = document.getElementById('imei-input')
     input.value = code
-    ScannerBox("remove")
     formulario.submit()
+    ScannerBox("remove")
 }
 
 // MASCARA

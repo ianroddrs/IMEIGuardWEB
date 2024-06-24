@@ -142,6 +142,20 @@ class DjangoSession(models.Model):
     class Meta:
         managed = False
         db_table = 'django_session'
+        
+class ModelUsuarios(models.Model):
+    authuser  = models.OneToOneField(AuthUser,models.DO_NOTHING,primary_key=True,db_column='authuser')
+    nome_completo = models.CharField(max_length=200, blank=False, null=False)
+    instituicao = models.CharField(max_length=100, blank=False, null=False)
+    cargo_funcao = models.CharField(max_length=500, blank=False, null=True)
+    matricula_funcional = models.IntegerField(blank=False, null=False)
+    cpf = models.BigIntegerField(blank=False, null=False)
+    lotacao = models.CharField(max_length=500, blank=False, null=False)
+    data_registro = models.DateTimeField(auto_now_add=True)
+    data_manutencao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'usuarios'
 
 class AppCelular(models.Model):
     nro_bop = models.CharField(max_length=500, blank=True, null=True)
@@ -154,13 +168,97 @@ class AppCelular(models.Model):
     class Meta:
         managed = False
         db_table = 'app_celular'
+        
+class Log_Pm(models.Model):
+    cpf = models.CharField(max_length=11, blank=True, null=True)
+    matricula = models.CharField(max_length=11, blank=True, null=True)
+    lotacao = models.CharField(max_length=100, blank=False, null=True)
+    data_requisicao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'log_pm'
 
 class log_pesquisa(models.Model):
     usuario = models.ForeignKey(AuthUser,models.DO_NOTHING)
-    pesquisa = models.CharField(max_length=20, blank=False, null=False)
+    pesquisa = models.CharField(max_length=15, blank=False, null=False)
     bop_resultado = models.CharField(max_length=20, blank=False, null=True)
     data_pesquisa = models.DateTimeField(auto_now_add=True)
+    log_pm = models.ForeignKey(Log_Pm,models.DO_NOTHING,db_column='log_pm')
     
     class Meta:
         managed = False
         db_table = 'log_pesquisa'
+        
+class AppCelular2(models.Model):
+    nro_bop = models.CharField(max_length=500, blank=True, null=True)
+    data_fato = models.DateField(blank=True, null=True)
+    data_registro = models.DateField(blank=True, null=True)
+    registros = models.CharField(max_length=500, blank=True, null=True)
+    relato = models.TextField(blank=True, null=True)
+    atuacao = models.CharField(max_length=500, blank=True, null=True)
+    nome_pessoa = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'app_celular2'
+        
+        
+class Imei_Data(models.Model):
+    nro_bop = models.CharField(max_length=500, blank=True, null=True)
+    data_fato = models.DateField(blank=True, null=True)
+    data_registro = models.DateField(blank=True, null=True)
+    relato = models.TextField(blank=True, null=True)
+    registros = models.CharField(max_length=500, blank=True, null=True)
+    atuacao = models.CharField(max_length=500, blank=True, null=True)
+    nome_pessoa = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'imei_data'
+        
+class Teste(models.Model):
+    nro_bop = models.CharField(max_length=500, blank=True, null=True)
+    data_fato = models.DateField(blank=True, null=True)
+    data_registro = models.DateField(blank=True, null=True)
+    relato = models.TextField(blank=True, null=True)
+    registros = models.CharField(max_length=500, blank=True, null=True)
+    atuacao = models.CharField(max_length=500, blank=True, null=True)
+    nome_pessoa = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'teste'
+
+INSTITUICAO = (
+    ('',''),
+    (1,'PM'),
+    (2,'PC'),
+    (3,'SEGUP'),
+    (4,'DETRAN'),
+    (5,'GUARDA MUNICIPAL'),
+    (6,'SEAP'),
+)      
+
+class Model_instituicao(models.Model):
+    id_instituicao = models.AutoField(primary_key=True,unique=True, db_index=True, serialize=True,null=False,blank=False)
+    ds_instituicao = models.CharField(max_length=50, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'instituicao'
+ 
+class Imei_recuperacao(models.Model):
+    usuario_apresentacao = models.ForeignKey(AuthUser,models.DO_NOTHING,db_column='usuario_apresentacao',related_name='usuario_apresentacao')
+    usuario_entrega = models.ForeignKey(AuthUser,models.DO_NOTHING,db_column='usuario_entrega',related_name='usuario_entrega',null=True)
+    pesquisa = models.CharField(max_length=15, blank=False, null=False)
+    bop_delito = models.ForeignKey(Imei_Data,models.DO_NOTHING,db_column='bop_delito')
+    bop_apresentacao = models.CharField(max_length=20, blank=False, null=False)
+    id_inst_apresentacao = models.CharField(max_length=10, null=False, blank=False,choices=INSTITUICAO)
+    bop_entrega = models.CharField(max_length=20, blank=True, null=True)
+    data_manutencao = models.DateTimeField(auto_now_add=True)
+    id = models.AutoField(primary_key=True,unique=True, db_index=True, serialize=True,null=False,blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'imei_recuperacao'

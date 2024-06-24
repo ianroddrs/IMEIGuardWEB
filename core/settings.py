@@ -154,7 +154,9 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Configura o tempo de vida da sessão para 10 minutos
+# Configura o tempo de vida da sessão para 30 minutos
 SESSION_COOKIE_AGE = 1800 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'download')]

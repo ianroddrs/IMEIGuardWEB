@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<form action="{% url 'resultado' %}" class="mx-3 text-center" id="pesquisa">
+<form action="{% url 'result' %}" class="mx-3 text-center" id="pesquisa">
     <h1 class="mb-5 text-center">Pesquisar IMEI</h1>
     <div class="input-group form-control rounded-pill">
         <div class="d-flex flex-row align-items-center rounded-pill">
@@ -38,7 +38,7 @@
 </container>
 <div class="d-flex justify-content-center align-items-center">
     <a href="{% url 'historico' %}" class="text-secondary btn-sm mt-5 mx-2">
-        Historico de resultados
+        Histórico de resultados
     </a>
 </div>
 {% endblock %}

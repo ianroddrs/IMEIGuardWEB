@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block imports %}
+{% endblock %}
+
+{% block content %}
+
+<div class="log-box w-100 p-4" style="max-width: 400px;" id="menu-login">
+    <div class=" mb-3">
+        <span class="text-secondary fw-bold fs-2">Cadastro de Usuários</span>
+    </div>
+    <h5 class="text-secondary p-0 m-0">Preencha correntamente os campos abaixo</h5>
+
+    <form method="POST" class="mt-2">
+        {% csrf_token %}
+        <div>
+            <label for="id_nome_completo">Nome completo:</label>
+            <input type="text" name="nome_completo" class="form-control text-uppercase" required="" id="id_nome_completo">
+        </div>
+        <div>
+            <label for="id_nome_completo">E-mail:</label>
+            <input type="email" name="email" class="form-control text-lowercase" required="" id="id_email">
+        </div>
+        <div>
+            <label for="id_instituicao">Instituicao:</label>
+            <select name="instituicao" class="form-select" id="id_instituicao">
+                <option value="" selected=""></option>
+                <option value="SEGUP">SEGUP</option>
+                <option value="DETRAN">DETRAN</option>
+                <option value="PM">PM</option>
+                <option value="PC">PC</option>
+            </select>
+        </div>
+        <div>
+            <label for="id_matricula_funcional">Matricula funcional:</label>
+            <input type="number" name="matricula_funcional" class="form-control" mask="number" required="" id="id_matricula_funcional">
+            <label for="id_cargo_funcao">Cargo/função:</label>
+            <input type="text" name="cargo_funcao" class="form-control text-uppercase" required="" id="id_cargo_funcao">
+            <label for="id_lotacao">Lotação:</label>
+            <input type="text" name="lotacao" class="form-control text-uppercase" required="" id="id_lotacao">
+            <label for="id_cpf">C.P.F:</label>
+            <input type="number" name="cpf" class="form-control" mask="number" required="" id="id_cpf">
+            <label for="id_password">Senha:</label>
+            <input class="form-control" type="password" name="password" autocomplete="current-password" required="" id="id_password">
+            
+            <button type="submit" class="btn mt-4 w-100 btn-success">Cadastrar</button>
+        </div>
+    </form>
+    {% if form.errors %}
+    <div class="alert alert-danger mb-0 mt-4 p-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill mx-2"></i>
+        Usuário ou senha incorretos.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
