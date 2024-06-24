@@ -55,7 +55,9 @@ def loginView(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
+            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password')) 
+            if form.cleaned_data.get('username') == "05054994000142":
+                return render(request, 'login.html', {'form': form})
             if user is not None:
                 if user.last_login == None:
                     login(request, user)
@@ -96,9 +98,9 @@ def resultado(request):
                 }
                 user = AuthUser.objects.get(username=user)
                 imei  = request.POST.get('imei')
-                # log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
-                # log_pm.save()
-                # pm = Log_Pm.objects.get(id=log_pm.id)
+                log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
+                log_pm.save()
+                pm = Log_Pm.objects.get(id=log_pm.id)
                 if imei.isdigit():
                     if len(imei) == 15 and len(set(imei)) > 3:
                         consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
@@ -111,10 +113,10 @@ def resultado(request):
                                     print(consulta)
                                 resultado_log = model_to_dict(i,fields=['nro_bop'])
                                 list_bops.append(resultado_log['nro_bop'])
-                            # log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm)
-                        # else:
-                            # log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm)
-                        # log.save()
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm)
+                        else:
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm)
+                        log.save()
                         consultas = []
                         for c in consulta:
                             consultas.append(model_to_dict(c))
