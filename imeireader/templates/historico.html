@@ -5,30 +5,22 @@
 {% endblock %}
 {% block content %}
 <h2 class="text-dark my-4">Historico do dia</h2>
-<div class="d-flex flex-column w-100 align-items-center px-4" style="max-height: 500px; overflow-y: auto;">
+<div class="d-flex flex-column w-100 align-items-center px-4">
     {% if historico %}
-        <div class="mt-2 p-1 z-3 w-100 text-dark bg-white" style="max-width: 500px; position: sticky; top: 0; outline:#fff solid 1px">
+        <div class="mt-2 p-1 w-100 text-dark" style="max-width: 500px;">
             <div class="d-flex flex-row justify-content-between">
-                <div class="col-4"><strong>IMEI</strong></div>
-                <div class="col text-center"><strong>Resultado</strong></div>
-                <div class="col-2 text-center"><strong>Hora</strong></div>
+                <div><strong>IMEI</strong></div>
+                <div><strong>Hora</strong></div>
             </div>
         </div>
         {% for h in historico %}
             <a href="/result/?imei={{h.pesquisa}}" class="m-2 p-3 border w-100 bg-light text-dark text-decoration-none" style="max-width: 500px;">
                 <div class="d-flex flex-row justify-content-between">
-                    <div class="col-4">
+                    <div>
                         {{h.pesquisa}}
                     </div>
                     <!-- {{h.data_pesquisa|date:"d/m/Y"}} -->
-                    <div class="col">
-                        <div class="form-check d-flex justify-content-center">
-                            <input class="form-check-input" disabled type="checkbox" value="" id="flexCheckChecked"{% if h.bop_resultado %}checked{% else %}{% endif %}>
-                        </div>
-                    </div>
-                    <div class="col-2 text-end">
-                        {{h.data_pesquisa|date:"H:i"}}
-                    </div>
+                    {{h.data_pesquisa|date:"H:i"}}
                 </div>
             </a>
         {% endfor %}
