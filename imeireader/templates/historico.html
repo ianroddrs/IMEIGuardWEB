@@ -5,29 +5,34 @@
 {% endblock %}
 {% block content %}
 <h2 class="text-dark my-4">Historico do dia</h2>
-<div class="d-flex flex-column w-100 align-items-center px-4">
-    {% if historico %}
-        <div class="mt-2 p-1 w-100 text-dark" style="max-width: 500px;">
-            <div class="d-flex flex-row justify-content-between">
-                <div><strong>IMEI</strong></div>
-                <div><strong>Hora</strong></div>
-            </div>
-        </div>
+
+{% if historico %}
+<div class="px-4 w-100 d-flex justify-content-center">
+    <table class="table table-hover" style="max-width: 500px;">
+        <tr class="bg-white">
+            <th class="py-3">IMEI</th>
+            <th class="py-3">Hora</th>
+            <th class="text-end py-3">Resultado</th>
+        </tr>
         {% for h in historico %}
-            <a href="/result/?imei={{h.pesquisa}}" class="m-2 p-3 border w-100 bg-light text-dark text-decoration-none" style="max-width: 500px;">
-                <div class="d-flex flex-row justify-content-between">
-                    <div>
-                        {{h.pesquisa}}
-                    </div>
-                    <!-- {{h.data_pesquisa|date:"d/m/Y"}} -->
-                    {{h.data_pesquisa|date:"H:i"}}
-                </div>
-            </a>
+        <tr onclick="window.location.href = '/result/?imei={{h.pesquisa}}'" style="cursor: pointer;">
+            <td class="py-4">{{h.pesquisa}}</td>
+            <td class="py-4"> {{h.data_pesquisa|date:"H:i"}}</td>
+            <td class="text-end p-4">
+                {% if h.bop_resultado %}
+                <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                {% else %}
+                <i class="bi bi-check-circle-fill text-success"></i>
+                {% endif %}
+            </td>
+        </tr>
         {% endfor %}
-    {% else %}
-        <div class="text-secondary">
-            Nenhum histórico registrado
-        </div>
-    {% endif %}
+    </table>
 </div>
+{% else %}
+    <div class="text-secondary">
+        Nenhum histórico registrado
+    </div>
+{% endif %}
+
 {% endblock %}
