@@ -120,7 +120,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 CSRF_TRUSTED_ORIGINS = ['https://sigop.segup.pa.gov.br']
 
@@ -137,8 +137,8 @@ CSRF_TRUSTED_ORIGINS = [
     # Adicione outros domínios conforme necessário
 ]
 
-SESSION_COOKIE_DOMAIN = 'sigop.segup.pa.gov.br'
-CSRF_COOKIE_DOMAIN = 'sigop.segup.pa.gov.br'
+# SESSION_COOKIE_DOMAIN = 'sigop.segup.pa.gov.br'
+# CSRF_COOKIE_DOMAIN = 'sigop.segup.pa.gov.br'
 
 LOGIN_URL = 'login'
 LOGOUT_URL = 'home'
