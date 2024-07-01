@@ -1,4 +1,5 @@
 env/
+env_ian/
 imeireader/__pycache__/
 imeireader/migrations/
 core/__pycache__/
