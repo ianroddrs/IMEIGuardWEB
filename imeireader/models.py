@@ -1,26 +1,5 @@
 from django.db import models
 
-
-class ApiProfile(models.Model):
-    identification_number = models.CharField(max_length=15)
-    user_id = models.IntegerField(unique=True)
-    is_reporter = models.BooleanField()
-    is_reviewer = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'api_profile'
-
-
-class ApiRegistroconsolidado(models.Model):
-    name = models.CharField(max_length=255)
-    active = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'api_registroconsolidado'
-
-
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -157,17 +136,6 @@ class ModelUsuarios(models.Model):
     class Meta:
         db_table = 'usuarios'
 
-class AppCelular(models.Model):
-    nro_bop = models.CharField(max_length=500, blank=True, null=True)
-    data_fato = models.DateField(blank=True, null=True)
-    data_registro = models.DateField(blank=True, null=True)
-    registros = models.CharField(max_length=500, blank=True, null=True)
-    relato = models.TextField(blank=True, null=True)
-    vit_nome = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'app_celular'
         
 class Log_Pm(models.Model):
     cpf = models.CharField(max_length=11, blank=True, null=True)
@@ -189,20 +157,7 @@ class log_pesquisa(models.Model):
     class Meta:
         managed = False
         db_table = 'log_pesquisa'
-        
-class AppCelular2(models.Model):
-    nro_bop = models.CharField(max_length=500, blank=True, null=True)
-    data_fato = models.DateField(blank=True, null=True)
-    data_registro = models.DateField(blank=True, null=True)
-    registros = models.CharField(max_length=500, blank=True, null=True)
-    relato = models.TextField(blank=True, null=True)
-    atuacao = models.CharField(max_length=500, blank=True, null=True)
-    nome_pessoa = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'app_celular2'
-        
+              
         
 class Imei_Data(models.Model):
     nro_bop = models.CharField(max_length=500, blank=True, null=True)
@@ -217,18 +172,6 @@ class Imei_Data(models.Model):
         managed = False
         db_table = 'imei_data'
         
-class Teste(models.Model):
-    nro_bop = models.CharField(max_length=500, blank=True, null=True)
-    data_fato = models.DateField(blank=True, null=True)
-    data_registro = models.DateField(blank=True, null=True)
-    relato = models.TextField(blank=True, null=True)
-    registros = models.CharField(max_length=500, blank=True, null=True)
-    atuacao = models.CharField(max_length=500, blank=True, null=True)
-    nome_pessoa = models.TextField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'teste'
 
 INSTITUICAO = (
     ('',''),
@@ -252,6 +195,8 @@ class Imei_recuperacao(models.Model):
     usuario_apresentacao = models.ForeignKey(AuthUser,models.DO_NOTHING,db_column='usuario_apresentacao',related_name='usuario_apresentacao')
     usuario_entrega = models.ForeignKey(AuthUser,models.DO_NOTHING,db_column='usuario_entrega',related_name='usuario_entrega',null=True)
     pesquisa = models.CharField(max_length=15, blank=False, null=False)
+    imei1 = models.CharField(max_length=15, blank=False, null=False)
+    imei2 = models.CharField(max_length=15, blank=False, null=False)
     bop_delito = models.ForeignKey(Imei_Data,models.DO_NOTHING,db_column='bop_delito')
     bop_apresentacao = models.CharField(max_length=20, blank=False, null=False)
     id_inst_apresentacao = models.CharField(max_length=10, null=False, blank=False,choices=INSTITUICAO)

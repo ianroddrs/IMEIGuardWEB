@@ -38,48 +38,46 @@
             <strong>Data fato:</strong> {{boletim.data_fato|date:"d/m/Y"}}
         </div>
         <div>
-            <strong>Vítima</strong> {{boletim.nome_pessoa|default_if_none:"Informação temporariamente indisponílvel"}}
+            <strong>{{boletim.atuacao}}: </strong> {{boletim.nome_pessoa|default_if_none:"Informação temporariamente indisponílvel"}}
         </div>
     </div>
-    <div class="accordion" id="accordion{{forloop.counter}}">
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingOne">
-                {% if list_recuperacao|length != resultado|length %}
-                    {% if list_recuperacao|length == 0 %}
-                    <button class="accordion-button collapsed rounded-0 alert alert-danger m-0" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{forloop.counter}}" aria-expanded="false" aria-controls="flush-collapse{{forloop.counter}}">
-                        Marcar como recuperado
-                    </button>
-                    {% endif %}
-                    {% for recuperacao in list_recuperacao %}
-                        {% for registro in recuperacao %}
-                            {% if boletim.id != registro.bop_delito.id %}
-                                <button class="accordion-button collapsed rounded-0 alert alert-danger m-0" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{forloop.parentloop.parentloop.counter}}" aria-expanded="false" aria-controls="flush-collapse{{forloop.parentloop.parentloop.counter}}">
-                                    Marcar como recuperado
-                                </button>
-                                {% endif%}
-                        {% endfor %}
-                    {% endfor %}
-                {% endif %}
-                {% for recuperacao in list_recuperacao %}
-                    {% for registro in recuperacao %}
-                        {% if boletim.id == registro.bop_delito.id %}
-                            <button class="accordion-button collapsed rounded-0 alert alert-success m-0" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{forloop.parentloop.parentloop.counter}}" aria-expanded="false" aria-controls="flush-collapse{{forloop.parentloop.parentloop.counter}}">
-                                Dispositivo Recuperado<i class="bi bi-check-circle-fill" style="font-size: 20px; padding-left: 5px;"></i>
-                            </button>
-                        {% endif%}
-                    {% endfor %}
-                {% endfor %}
-            </h2>
-            <div id="flush-collapse{{forloop.counter}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlush{{forloop.counter}}">
-            <div class="accordion-body">
-                {% if list_recuperacao|length != resultado|length %}
-                    {% if list_recuperacao|length == 0 %}
-                        <form action="{% url 'rec' %}" method="POST" class="mt-2">
+
+    <div class="text-center">
+
+        <button class="btn {%if list_recuperacao|length == 0 %}btn-danger{%else%}btn-success{% endif %} mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+            {%if list_recuperacao|length == 0 %}Marcar Como {% endif %}Recuperado
+        </button>
+
+        <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel" style="height: auto !important;">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasBottomLabel">
+                    {%if list_recuperacao|length == 0 %}Marcar Como {% endif %}Recuperado
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body small">
+
+
+                {% if list_recuperacao|length == 0 %}
+                    <div class="px-4 w-100 d-flex justify-content-center">
+                        <form action="{% url 'rec' %}" method="POST" class="w-100" style="max-width: 400px;">
                             {% csrf_token %}
+                            <div class="d-flex flex-row">
+                                <div>
+                                    <label for="id_instituicao">IMEI 1</label>
+                                    <input type="text" inputmode="numeric" oninput="mascara()" name="imei1" required class="form-control" id="imei-input1" value="{{request.GET.imei}}" mask="imei">
+                                </div>
+                                <div>
+                                    <label for="id_instituicao">IMEI 2</label>
+                                    <input type="text" inputmode="numeric" oninput="mascara()" name="imei2" required class="form-control" id="imei-input2" mask="imei">
+                                </div>
+                            </div>
+                            
                             <label for="id_bop_apresentacao">B.O Apresentação:</label>
-                            <input class="form-control" mask="bop" oninput="mascara()" type="text" name="bop_apresentacao" autofocus="" autocapitalize="none" autocomplete="bop_apresentacao" maxlength="19" required="" id="id_bop_apresentacao" value="{% for recuperacao in list_recuperacao %}{% for registro in recuperacao %}{% if boletim.id == registro.bop_delito.id %}{{registro.bop_apresentacao}}{% endif%}{% endfor %}{% endfor %}">
+                            <input class="form-control" mask="bop" inputmode="numeric" oninput="mascara()" type="text" name="bop_apresentacao" autofocus autocapitalize="none" autocomplete="bop_apresentacao" maxlength="19" required id="id_bop_apresentacao" value="{% for recuperacao in list_recuperacao %}{% for registro in recuperacao %}{% if boletim.id == registro.bop_delito.id %}{{registro.bop_apresentacao}}{% endif%}{% endfor %}{% endfor %}">
+
                             <label for="id_instituicao">Instituicao Apresentante:</label>
-                            <select name="instituicao" class="form-select" id="id_instituicao" required="">
+                            <select name="instituicao" class="form-select" id="id_instituicao" required>
                                 <option value="" selected=""></option>
                                 <option value=1>PM</option>
                                 <option value=2>PC</option>
@@ -88,8 +86,12 @@
                                 <option value=5>GUARDA MUNICIPAL</option>
                                 <option value=6>SEAP</option>
                             </select>
+                            
+
+
                             <input type="hidden" name="id_bop" value="{{boletim.id}}">
                             <input type="hidden" name="imei" value="{{request.GET.imei}}">
+
                             {% if usuario.instituicao == 'PC'%}
                                 <label for="id_bop_entrega">B.O Entrega:</label>
                                 <input class="form-control" mask="bop" oninput="mascara()" type="text" name="bop_entrega" autofocus="" autocapitalize="none" autocomplete="bop_entrega" maxlength="19" id="id_bop_entrega">
@@ -99,122 +101,8 @@
                             {% endif %}
                             <button type="submit" class="btn mt-4 w-100 btn-primary">Salvar</button>
                         </form>
-                    {% endif %}
-                    {% for recuperacao in list_recuperacao %}
-                        {% for registro in recuperacao %}
-                            {% if boletim.id != registro.bop_delito.id%}
-                                <form action="{% url 'rec' %}" method="POST" class="mt-2">
-                                    {% csrf_token %}
-                                    <label for="id_bop_apresentacao">B.O Apresentação:</label>
-                                    <input class="form-control" mask="bop" oninput="mascara()" type="text" name="bop_apresentacao" autofocus="" autocapitalize="none" autocomplete="bop_apresentacao" maxlength="19" required="" id="id_bop_apresentacao" value="{% for recuperacao in list_recuperacao %}{% for registro in recuperacao %}{% if boletim.id == registro.bop_delito.id %}{{registro.bop_apresentacao}}{% endif%}{% endfor %}{% endfor %}">
-                                    {% if boletim.id == registro.bop_delito.id and registro.id_inst_apresentacao %}
-                                        {% for i in instituicao %}
-                                            {% if boletim.id == registro.bop_delito.id and  registro.id_inst_apresentacao == i.id_instituicao %}
-                                                <label >Instituição Apresentação:</label>
-                                                <input class="form-control" type="text" placeholder="{{i.ds_instituicao|default_if_none:''}}" readonly disabled>
-                                            {% else %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                    <label for="id_instituicao">Instituicao Apresentante:</label>
-                                    <select name="instituicao" class="form-select" id="id_instituicao" required="">
-                                        <option value="" selected=""></option>
-                                        <option value=1>PM</option>
-                                        <option value=2>PC</option>
-                                        <option value=3>SEGUP</option>
-                                        <option value=4>DETRAN</option>
-                                        <option value=5>GUARDA MUNICIPAL</option>
-                                        <option value=6>SEAP</option>
-                                    </select>
-                                    {% endif %}
-                                    <input type="hidden" name="id_bop" value="{{boletim.id}}">
-                                    <input type="hidden" name="imei" value="{{request.GET.imei}}">
-
-                                    {% if usuario.instituicao == 'PC'%}
-                                        <label for="id_bop_entrega">B.O Entrega:</label>
-                                        <input class="form-control" mask="bop" oninput="mascara()" type="text" name="bop_entrega" autofocus="" autocapitalize="none" autocomplete="bop_entrega" maxlength="19" id="id_bop_entrega">
-                                    {% else %}
-                                        <label for="id">B.O Entrega:</label>
-                                        <input class="form-control" mask="bop" oninput="mascara()" type="text" name="" autofocus="" autocapitalize="none" autocomplete="" maxlength="19" id="" disabled placeholder="Polícia Civil">
-                                    {% endif %}
-                                    <button type="submit" class="btn mt-4 w-100 btn-primary">Salvar</button>
-                                </form>
-                                {% endif%}
-                        {% endfor %}
-                    {% endfor %}
+                    </div>
                 {% endif %}
-                {% for recuperacao in list_recuperacao %}
-                    {% for registro in recuperacao %}
-                        {% if boletim.id == registro.bop_delito.id and usuario.instituicao != 'PC' %}
-                            <label >B.O Apresentação:</label>
-                            <input class="form-control" mask="bop" oninput="mascara()" type="text" placeholder="{{registro.bop_apresentacao|default_if_none:''}}" readonly disabled maxlength="19">
-                            {% for i in instituicao %}
-                                {% if boletim.id == registro.bop_delito.id and  registro.id_inst_apresentacao == i.id_instituicao %}
-                                    <label >Instituição Apresentação:</label>
-                                    <input class="form-control" type="text" placeholder="{{i.ds_instituicao|default_if_none:''}}" readonly disabled>
-                                {% else %}
-                                {% endif %}
-                            {% endfor %}
-                            <label>B.O Entrega:</label> 
-                            <input class="form-control" mask="bop" oninput="mascara()" type="text" placeholder="{{registro.bop_entrega|default_if_none:'Pendente na Polícia Civil'}}" readonly="" disabled maxlength="19">
-                            <label>Data Atualização:</label> 
-                            <input class="form-control" type="text" placeholder='{{registro.data_manutencao|date:"d/m/Y H:i"|default_if_none:""}}' readonly="" disabled>
-                        {% elif  boletim.id != registro.bop_delito.id%}
-                        {% else %}
-                            {% if boletim.id == registro.bop_delito.id and registro.bop_entrega and registro.bop_apresentacao and registro.id_inst_apresentacao%}
-                                <label >B.O Apresentação:</label>
-                                <input class="form-control" mask="bop" oninput="mascara()" type="text" placeholder="{{registro.bop_apresentacao|default_if_none:''}}" readonly disabled maxlength="19">
-                                {% for i in instituicao %}
-                                    {% if boletim.id == registro.bop_delito.id and  registro.id_inst_apresentacao == i.id_instituicao %}
-                                        <label >Instituição Apresentação:</label>
-                                        <input class="form-control" type="text" placeholder="{{i.ds_instituicao|default_if_none:''}}" readonly disabled>
-                                    {% else %}
-                                    {% endif %}
-                                {% endfor %}
-                                <label>B.O Entrega:</label> 
-                                <input class="form-control" mask="bop" oninput="mascara()" type="text" placeholder="{{registro.bop_entrega|default_if_none:'Pendente na Polícia Civil'}}" readonly="" disabled maxlength="19">
-                                <label>Data Atualização:</label> 
-                                <input class="form-control" type="text" placeholder='{{registro.data_manutencao|date:"d/m/Y H:i"|default_if_none:""}}' readonly="" disabled>
-                            {% else %}
-                                <form action="{% url 'rec' %}" method="POST" class="mt-2">
-                                    {% csrf_token %}
-                                    <label for="id_bop_apresentacao">B.O Apresentação:</label>
-                                    <input class="form-control" mask="bop" oninput="mascara()" type="text" {% if boletim.id == registro.bop_delito.id and registro.bop_apresentacao %}disabled  readonly=""{% else %} name="bop_apresentacao" autofocus="" autocapitalize="none" autocomplete="bop_apresentacao" maxlength="19" required="" id="id_bop_apresentacao" {% endif %} placeholder="{% if boletim.id == registro.bop_delito.id %}{{registro.bop_apresentacao|default_if_none:''}}{% endif%}">
-                                    {% if boletim.id == registro.bop_delito.id and registro.id_inst_apresentacao %}
-                                        {% for i in instituicao %}
-                                            {% if boletim.id == registro.bop_delito.id and  registro.id_inst_apresentacao == i.id_instituicao %}
-                                                <label >Instituição Apresentação:</label>
-                                                <input class="form-control" type="text" placeholder="{{i.ds_instituicao|default_if_none:''}}" readonly disabled>
-                                            {% else %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                    <label for="id_instituicao">Instituicao Apresentante:</label>
-                                    <select name="instituicao" class="form-select" id="id_instituicao" required="">
-                                        <option value="" selected=""></option>
-                                        <option value=1>PM</option>
-                                        <option value=2>PC</option>
-                                        <option value=3>SEGUP</option>
-                                        <option value=4>DETRAN</option>
-                                        <option value=5>GUARDA MUNICIPAL</option>
-                                        <option value=6>SEAP</option>
-                                    </select>
-                                    {% endif %}
-                                    <input type="hidden" name="id_bop" value="{{boletim.id}}">
-                                    <input type="hidden" name="imei" value="{{request.GET.imei}}">
-                                    <label for="id_bop_entrega">B.O Entrega:</label>
-                                    <input class="form-control" mask="bop" oninput="mascara()" type="text" {% if boletim.id == registro.bop_delito.id and registro.bop_entrega %}disabled  readonly=""{% else %} name="bop_entrega" autofocus="" autocapitalize="none" autocomplete="bop_entrega" maxlength="19" id="id_bop_entrega" {% endif %} placeholder="{% if boletim.id == registro.bop_delito.id %}{{registro.bop_entrega|default_if_none:''}}{% endif%}">
-                                    {% if registro.data_manutencao %}
-                                        <label>Data Atualização:</label> 
-                                        <input class="form-control" type="text" placeholder='{{registro.data_manutencao|date:"d/m/Y H:i"|default_if_none:""}}' readonly="" disabled>
-                                    {% endif %}
-                                    <button type="submit" class="btn mt-4 w-100 btn-primary">Salvar</button>
-                                </form>
-                            {% endif %}
-                        {% endif%}
-                    {% endfor %}
-                {% endfor %}
-            </div>
             </div>
         </div>
     </div>

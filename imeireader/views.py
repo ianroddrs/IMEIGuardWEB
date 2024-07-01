@@ -3,7 +3,7 @@ from core.settings import STATICFILES_DIRS
 import os
 from datetime import date, timedelta
 from django.shortcuts import render,redirect
-from .models import AppCelular, log_pesquisa, AuthUser, AppCelular2
+from .models import log_pesquisa, AuthUser
 from django.contrib.auth import logout,login, authenticate, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required,permission_required
@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 import pandas as pd
 from tkinter import filedialog
 import datetime
+from django.db.models import Q
 
 
 @login_required
@@ -21,19 +22,22 @@ import datetime
 def cad_user(request):
     #####################AUTOMACAO PARA CADASTRO E ENVIO DE USUARIOS #################
     if request.method == "GET":
-        dados = pd.read_excel('cad_user/LOT8IMEIGUARD.xlsx')
+        dados = pd.read_excel('cad_user/LOT13IMEIGUARD.xlsx')
         df = pd.DataFrame(dados)
         df = df.to_dict('records')
         for df in df:
-            print(df['nome_completo'])
-            # if df['nome_completo'] == 'pessoa1':
-            senha = generate_secure_password()
-            partes = df['nome_completo'].split()
-            form_authuser = User.objects.create_user(username=df['matricula_funcional'], password=senha,first_name=partes[0],last_name=partes[-1],email=df['email'])
-            form_authuser.save()
-            user = AuthUser.objects.get(id=form_authuser.id)
-            usuario = ModelUsuarios(authuser=user,nome_completo=df['nome_completo'],instituicao=df['instituicao'],matricula_funcional=df['matricula_funcional'],cpf=df['cpf'],cargo_funcao=df['cargo_funcao'],lotacao=df['lotacao']).save()
-            email(df['email'], df['nome_completo'],df['matricula_funcional'],senha)
+            try:
+                print(df['nome_completo'])
+                # if df['nome_completo'] == 'pessoa1':
+                senha = generate_secure_password()
+                partes = df['nome_completo'].split()
+                form_authuser = User.objects.create_user(username=df['matricula_funcional'], password=senha,first_name=partes[0],last_name=partes[-1],email=df['email'])
+                form_authuser.save()
+                user = AuthUser.objects.get(id=form_authuser.id)
+                usuario = ModelUsuarios(authuser=user,nome_completo=df['nome_completo'],instituicao=df['instituicao'],matricula_funcional=df['matricula_funcional'],cpf=df['cpf'],cargo_funcao=df['cargo_funcao'],lotacao=df['lotacao']).save()
+                email(df['email'], df['nome_completo'],df['matricula_funcional'],senha)
+            except Exception as error:
+                print(error)
     if request.method == "POST":
         nome = request.POST['nome_completo']
         nome = nome.upper()
@@ -55,7 +59,9 @@ def loginView(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
+            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password')) 
+            if form.cleaned_data.get('username') == "05054994000142":
+                return render(request, 'login.html', {'form': form})
             if user is not None:
                 if user.last_login == None:
                     login(request, user)
@@ -96,11 +102,12 @@ def resultado(request):
                 }
                 user = AuthUser.objects.get(username=user)
                 imei  = request.POST.get('imei')
-                # log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
-                # log_pm.save()
-                # pm = Log_Pm.objects.get(id=log_pm.id)
+                log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
+                log_pm.save()
+                pm = Log_Pm.objects.get(id=log_pm.id)
                 if imei.isdigit():
-                    if len(imei) == 15 and len(set(imei)) > 3:
+                    # if len(imei) == 15 and len(set(imei)) > 3:
+                    if is_luhn_valid(imei):
                         consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
                         if consulta.count()>0:
                             for i in consulta:
@@ -111,10 +118,10 @@ def resultado(request):
                                     print(consulta)
                                 resultado_log = model_to_dict(i,fields=['nro_bop'])
                                 list_bops.append(resultado_log['nro_bop'])
-                            # log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm)
-                        # else:
-                            # log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm)
-                        # log.save()
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm)
+                        else:
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm)
+                        log.save()
                         consultas = []
                         for c in consulta:
                             consultas.append(model_to_dict(c))
@@ -176,10 +183,10 @@ def resultadoGET(request):
                     # data_registro__gte=date.today()-timedelta(days=730),
                     if consulta.count()>0:
                         for i in consulta:
-                            recuperacao = Imei_recuperacao.objects.filter(bop_delito=i.id)
+                            # recuperacao = Imei_recuperacao.objects.filter(Q(bop_delito=i.id)&(Q(imei1=imei)|Q(imei2=imei)))
+                            recuperacao = Imei_recuperacao.objects.filter(Q(imei1=imei)|Q(imei2=imei))
                             if recuperacao:
-                                list_recup.append(recuperacao)
-
+                                list_recup.append(recuperacao)       
                             resultado_log = model_to_dict(i,fields=['nro_bop'])
                             list_bops.append(resultado_log['nro_bop'])
                         log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops).save()
@@ -202,6 +209,7 @@ def resultadoGET(request):
             except:
                 erro = 'Ocorreu um erro. Por favor verifique se o IMEI pesquisado está correto'
             return render(request, 'resultado.html', {'erro': erro})
+        print(list_recup)
         return render(request, 'resultado.html', {'resultado': consulta, 'list_recuperacao':list_recup,'usuario':usuario,'instituicao':instituicao})
 
 @login_required 
@@ -214,13 +222,15 @@ def recuperacao(request):
     instituicao = Model_instituicao.objects.get(id_instituicao=request.POST.get('instituicao'))
     print(instituicao)
     if recuperado:
-        recuperado.update(usuario_entrega=user,bop_entrega=request.POST.get('bop_entrega'),data_manutencao=datetime.datetime.now())
+        recuperado.update(usuario_entrega=user, imei1=request.POST.get('imei'),bop_entrega=request.POST.get('bop_entrega'),data_manutencao=datetime.datetime.now())
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     recuperacao = Imei_recuperacao(
         usuario_apresentacao=user,
         usuario_entrega=user if request.POST.get('bop_entrega') else None,
         pesquisa=request.POST.get('imei'),
         bop_delito=bop_delito,
+        imei1=request.POST.get('imei1'),
+        imei2=request.POST.get('imei2'),
         id_inst_apresentacao=instituicao.id_instituicao,
         bop_apresentacao=request.POST.get('bop_apresentacao'),
         bop_entrega=request.POST.get('bop_entrega'),data_manutencao=datetime.datetime.now())
