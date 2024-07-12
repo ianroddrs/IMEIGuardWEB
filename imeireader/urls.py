@@ -12,4 +12,5 @@ urlpatterns = [
     path('login/', views.loginView, name='login'),
     path('logout', views.exit, name='exit'),
     path('download/apk/', views.download_apk, name='download_apk'),
+    path('test', views.test, name='test'),
 ]

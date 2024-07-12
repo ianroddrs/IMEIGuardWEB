@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Imagem em Base64</title>
+</head>
+<body>
+    <form id="imageForm" method="post">
+        {% csrf_token %}
+        <input type="file" id="imageInput" accept="image/*">
+        <input type="text" id="base64Input" name="device_img">
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const base64String = reader.result.replace('data:', '').replace(/^.+,/, '');
+                document.getElementById('base64Input').value = base64String;
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>

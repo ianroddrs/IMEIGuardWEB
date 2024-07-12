@@ -83,6 +83,15 @@ def exit(request):
 def home(request):
     return render(request, 'home.html')
 
+def test(request):
+    if request.method == 'POST':
+        img = request.POST.get('device_img')
+        print(img)
+        log = log_pesquisa(usuario=AuthUser.objects.get(id=request.user.id),pesquisa='0000000000000',bop_resultado=None, img_aparelho=img)
+        log.save()
+    return render(request, 'test.html')
+
+
 @csrf_exempt
 def resultado(request):
     if request.method == 'POST':
