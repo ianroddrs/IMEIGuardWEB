@@ -5,7 +5,7 @@ import datetime
 csrf_token = secrets.token_hex(32)
 print(f"Token CSRF gerado: {csrf_token}")
 # url = 'https://imeiapi.org/'
- url = 'https://sigop.segup.pa.gov.br/resultado/'
+url = 'https://sigop.segup.pa.gov.br/resultado/'
 
 dados = {
     'username': '05054994000142',
