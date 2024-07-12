@@ -46,7 +46,6 @@ function showScanner(){
         devices.forEach(element => {
             text += `${element.label}\n`
         });
-        alert(text)
     }).catch(err => {
         console.error(err);
     });

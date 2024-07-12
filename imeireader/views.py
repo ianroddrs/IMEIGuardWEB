@@ -118,7 +118,7 @@ def resultado(request):
                 pm = Log_Pm.objects.get(id=log_pm.id)
                 if imei.isdigit():
                     # if len(imei) == 15 and len(set(imei)) > 3:
-                    if is_luhn_valid(imei):
+                    if is_luhn_valid(imei) and len(imei) == 15:
                         consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
                         if consulta.count()>0:
                             for i in consulta:
@@ -221,13 +221,9 @@ def resultadoGET(request):
 
 @login_required 
 def recuperacao(request):
-    print(request.POST)
     user = AuthUser.objects.get(id=request.user.id)
     bop_delito = Imei_Data.objects.get(id=request.POST.get('id_bop'))
     recuperado = Imei_recuperacao.objects.filter(bop_delito=bop_delito)
-    print(bop_delito)
-    instituicao = Model_instituicao.objects.get(id_instituicao=request.POST.get('instituicao'))
-    print(instituicao)
     if recuperado:
         recuperado.update(
             usuario_entrega=user, 
@@ -237,6 +233,7 @@ def recuperacao(request):
             data_manutencao=datetime.datetime.now()
         )
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    instituicao = Model_instituicao.objects.get(id_instituicao=request.POST.get('instituicao'))
     recuperacao = Imei_recuperacao(
         usuario_apresentacao=user,
         usuario_entrega=user if request.POST.get('bop_entrega') else None,

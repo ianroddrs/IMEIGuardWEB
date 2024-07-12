@@ -10,7 +10,7 @@ url = 'https://sigop.segup.pa.gov.br/resultado/'
 dados = {
     'username': '05054994000142',
     'password': 'T&st&PmP@',
-    'imei': '555555555555551',
+    'imei': '03172988',
     'csrf_token':csrf_token,
     'cpf':'-',
     'matricula':'-',
