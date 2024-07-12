@@ -58,9 +58,7 @@ def loginView(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password')) 
-            if form.cleaned_data.get('username') == "05054994000142":
-                return render(request, 'login.html', {'form': form})
+            user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
             if user is not None:
                 if user.last_login == None:
                     login(request, user)
