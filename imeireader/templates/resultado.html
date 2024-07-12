@@ -20,97 +20,26 @@
 
 <hr class="w-75">
 
-
-
 {% for boletim in resultado %}
 <div class="border shadow rounded text-dark my-2 w-75" style="max-width: 400px;">
     <div class="bg-danger text-white p-2 rounded-top text-center">
         {{boletim.registros|default_if_none:"Informação temporariamente indisponílvel"}}
     </div>
     <div class="p-3">
-        <div>
-            <strong>Boletim:</strong> {{boletim.nro_bop}}
-        </div>
-        <div>
-            <strong>Data registro:</strong> {{boletim.data_registro|date:"d/m/Y" }}
-        </div>
-        <div>
-            <strong>Data fato:</strong> {{boletim.data_fato|date:"d/m/Y"}}
-        </div>
-        <div>
-            <strong>{{boletim.atuacao}}: </strong> {{boletim.nome_pessoa|default_if_none:"Informação temporariamente indisponílvel"}}
-        </div>
+        <div><strong>Boletim:</strong> {{boletim.nro_bop}}</div>
+        <div><strong>Data registro:</strong> {{boletim.data_registro|date:"d/m/Y" }}</div>
+        <div><strong>Data fato:</strong> {{boletim.data_fato|date:"d/m/Y"}}</div>
+        <div><strong>{{boletim.atuacao}}: </strong> {{boletim.nome_pessoa|default_if_none:"Informação temporariamente indisponílvel"}}</div>
     </div>
-
-    <div class="text-center">
-
-        <button class="btn {%if list_recuperacao|length == 0 %}btn-danger{%else%}btn-success{% endif %} mb-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
-            {%if list_recuperacao|length == 0 %}Marcar Como {% endif %}Recuperado
-        </button>
-
-        <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel" style="height: auto !important;">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasBottomLabel">
-                    {%if list_recuperacao|length == 0 %}Marcar Como {% endif %}Recuperado
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body small">
-
-
-                {% if list_recuperacao|length == 0 %}
-                    <div class="px-4 w-100 d-flex justify-content-center">
-                        <form action="{% url 'rec' %}" method="POST" class="w-100" style="max-width: 400px;">
-                            {% csrf_token %}
-                            <div class="d-flex flex-row">
-                                <div>
-                                    <label for="id_instituicao">IMEI 1</label>
-                                    <input type="text" inputmode="numeric" oninput="mascara()" name="imei1" required class="form-control" id="imei-input1" value="{{request.GET.imei}}" mask="imei">
-                                </div>
-                                <div>
-                                    <label for="id_instituicao">IMEI 2</label>
-                                    <input type="text" inputmode="numeric" oninput="mascara()" name="imei2" required class="form-control" id="imei-input2" mask="imei">
-                                </div>
-                            </div>
-                            
-                            <label for="id_bop_apresentacao">B.O Apresentação:</label>
-                            <input class="form-control" mask="bop" inputmode="numeric" oninput="mascara()" type="text" name="bop_apresentacao" autofocus autocapitalize="none" autocomplete="bop_apresentacao" maxlength="19" required id="id_bop_apresentacao" value="{% for recuperacao in list_recuperacao %}{% for registro in recuperacao %}{% if boletim.id == registro.bop_delito.id %}{{registro.bop_apresentacao}}{% endif%}{% endfor %}{% endfor %}">
-
-                            <label for="id_instituicao">Instituicao Apresentante:</label>
-                            <select name="instituicao" class="form-select" id="id_instituicao" required>
-                                <option value="" selected=""></option>
-                                <option value=1>PM</option>
-                                <option value=2>PC</option>
-                                <option value=3>SEGUP</option>
-                                <option value=4>DETRAN</option>
-                                <option value=5>GUARDA MUNICIPAL</option>
-                                <option value=6>SEAP</option>
-                            </select>
-                            
-
-
-                            <input type="hidden" name="id_bop" value="{{boletim.id}}">
-                            <input type="hidden" name="imei" value="{{request.GET.imei}}">
-
-                            {% if usuario.instituicao == 'PC'%}
-                                <label for="id_bop_entrega">B.O Entrega:</label>
-                                <input class="form-control" mask="bop" oninput="mascara()" type="text" name="bop_entrega" autofocus="" autocapitalize="none" autocomplete="bop_entrega" maxlength="19" id="id_bop_entrega">
-                            {% else %}
-                                <label for="id">B.O Entrega:</label>
-                                <input class="form-control" mask="bop" oninput="mascara()" type="text" name="" autofocus="" autocapitalize="none" autocomplete="" maxlength="19" id="" disabled placeholder="Polícia Civil">
-                            {% endif %}
-                            <button type="submit" class="btn mt-4 w-100 btn-primary">Salvar</button>
-                        </form>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    {% for recuperado in list_recuperacao %}
+        {% include 'recuperacao.html' %}
+    {% empty %}
+        {% include 'recuperacao.html' with empty='true' %}
+    {% endfor %}
 </div>
-{% empty %}
+{% endfor %}
 <a href="{% url 'home' %}" class="btn btn-danger mt-5 mx-2 mt-3">
     Nova pesquisa
 </a>
-{% endfor %}
 
 {% endblock %}

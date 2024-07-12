@@ -12,7 +12,6 @@ from django.forms.models import model_to_dict
 from .form import *
 from django.contrib.auth.models import User
 import pandas as pd
-from tkinter import filedialog
 import datetime
 from django.db.models import Q
 
@@ -102,6 +101,9 @@ def resultado(request):
                 }
                 user = AuthUser.objects.get(username=user)
                 imei  = request.POST.get('imei')
+
+                img = request.POST.get('device_img')
+
                 log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
                 log_pm.save()
                 pm = Log_Pm.objects.get(id=log_pm.id)
@@ -118,9 +120,9 @@ def resultado(request):
                                     print(consulta)
                                 resultado_log = model_to_dict(i,fields=['nro_bop'])
                                 list_bops.append(resultado_log['nro_bop'])
-                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm)
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm, img_aparelho=img)
                         else:
-                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm)
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm, img_aparelho=img)
                         log.save()
                         consultas = []
                         for c in consulta:
@@ -176,27 +178,22 @@ def resultadoGET(request):
             usuario = ModelUsuarios.objects.get(authuser=request.user.id)
             instituicao = Model_instituicao.objects.all()
             imei = request.GET.get('imei')
-            if imei.isdigit():
-                # if len(imei) == 15 and len(set(imei)) > 1:
-                if is_luhn_valid(imei):
-                    consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
-                    # data_registro__gte=date.today()-timedelta(days=730),
-                    if consulta.count()>0:
-                        for i in consulta:
-                            # recuperacao = Imei_recuperacao.objects.filter(Q(bop_delito=i.id)&(Q(imei1=imei)|Q(imei2=imei)))
-                            recuperacao = Imei_recuperacao.objects.filter(Q(imei1=imei)|Q(imei2=imei))
-                            if recuperacao:
-                                list_recup.append(recuperacao)       
-                            resultado_log = model_to_dict(i,fields=['nro_bop'])
-                            list_bops.append(resultado_log['nro_bop'])
-                        log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops).save()
-                    else:
-                        log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None).save()
+
+            if imei.isdigit() and is_luhn_valid(imei):
+                consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
+                if consulta.count()>0:
+                    for i in consulta:
+                        # recuperacao = Imei_recuperacao.objects.filter(Q(imei1=imei)|Q(imei2=imei))
+                        recuperacao = Imei_recuperacao.objects.filter(Q(bop_delito=i.id)&Q(Q(imei1=imei)|Q(imei2=imei)))
+                        for x in recuperacao:
+                            list_recup.append(x)
+                        resultado_log = model_to_dict(i,fields=['nro_bop'])
+                        list_bops.append(resultado_log['nro_bop'])
+                    log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops).save()
                 else:
-                    erro = 'O termo pesquisado não é um IMEI válido'
-                    return render(request, 'resultado.html', {'erro': erro})
-            else:
-                erro = 'O termo pesquisado não é um IMEI'
+                    log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None).save()
+            else: 
+                erro = 'O termo pesquisado não é um IMEI válido'
                 return render(request, 'resultado.html', {'erro': erro})
         except ValueError:
             erro = 'Ocorreu um erro desconhecido. Por favor contate a equipe de suporte'
@@ -209,7 +206,8 @@ def resultadoGET(request):
             except:
                 erro = 'Ocorreu um erro. Por favor verifique se o IMEI pesquisado está correto'
             return render(request, 'resultado.html', {'erro': erro})
-        print(list_recup)
+        # print(vars(consulta[0]))
+        # print(vars(list_recup[0][0]))
         return render(request, 'resultado.html', {'resultado': consulta, 'list_recuperacao':list_recup,'usuario':usuario,'instituicao':instituicao})
 
 @login_required 
@@ -222,12 +220,18 @@ def recuperacao(request):
     instituicao = Model_instituicao.objects.get(id_instituicao=request.POST.get('instituicao'))
     print(instituicao)
     if recuperado:
-        recuperado.update(usuario_entrega=user, imei1=request.POST.get('imei'),bop_entrega=request.POST.get('bop_entrega'),data_manutencao=datetime.datetime.now())
+        recuperado.update(
+            usuario_entrega=user, 
+            imei1=request.POST.get('imei1'),
+            imei2=request.POST.get('imei2'),
+            bop_entrega=request.POST.get('bop_entrega'),
+            data_manutencao=datetime.datetime.now()
+        )
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     recuperacao = Imei_recuperacao(
         usuario_apresentacao=user,
         usuario_entrega=user if request.POST.get('bop_entrega') else None,
-        pesquisa=request.POST.get('imei'),
+        pesquisa=request.POST.get('pesquisa'),
         bop_delito=bop_delito,
         imei1=request.POST.get('imei1'),
         imei2=request.POST.get('imei2'),

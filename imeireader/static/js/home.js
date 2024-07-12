@@ -101,25 +101,6 @@ function addIMEI(code){
     ScannerBox("remove")
 }
 
-// MASCARA
-
-function mascara() {
-    const input = document.querySelector('#imei-input');
-    var cursorPosition = input.selectionStart;
-    var oldValue = input.value;
-    input.value = mnumber(input.value);
-    var diff = input.value.length - oldValue.length;
-    input.selectionStart = input.selectionEnd = Math.max(0, cursorPosition + diff);
-}
-
-function mnumber(v) {
-    v = v.replace(/\D/g, ""); 
-    if (v.length > 15) {
-        v = v.slice(0, 15);
-    }
-    return v;
-}   
-  
 document.getElementById('pesquisa').addEventListener('submit', function(event) {
     const input = document.querySelector('#imei-input');
     if (input.value.length < 15) {
@@ -127,3 +108,5 @@ document.getElementById('pesquisa').addEventListener('submit', function(event) {
       event.preventDefault();
     }
   });
+
+  

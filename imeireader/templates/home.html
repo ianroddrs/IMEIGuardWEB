@@ -14,7 +14,7 @@
         <div class="d-flex flex-row align-items-center rounded-pill">
             <!-- <i class="bi bi-search fs-6 me-3 text-secondary"></i> -->
             <span class="text-secondary me-2"> IMEI</span>
-            <input type="text" inputmode="numeric" oninput="mascara()" name="imei" required class="border-0 p-0 fs-5 w-100" id="imei-input">
+            <input type="text" inputmode="numeric" oninput="mascara(this)" name="imei" mask="imei" required class="border-0 p-0 fs-5 w-100" id="imei-input">
             <button type="button" class="btn text-center rounded-pill border-0 z-1" onclick="showScanner()">
                 <i class="bi bi-upc-scan fs-5 text-primary text-bold"></i>
             </button>
