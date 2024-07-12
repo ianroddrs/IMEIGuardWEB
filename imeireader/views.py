@@ -21,7 +21,7 @@ from django.db.models import Q
 def cad_user(request):
     #####################AUTOMACAO PARA CADASTRO E ENVIO DE USUARIOS #################
     if request.method == "GET":
-        dados = pd.read_excel('cad_user/LOT13IMEIGUARD.xlsx')
+        dados = pd.read_excel('cad_user/LOT14IMEIGUARD.xlsx')
         df = pd.DataFrame(dados)
         df = df.to_dict('records')
         for df in df:

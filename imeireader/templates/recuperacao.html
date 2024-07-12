@@ -1,11 +1,11 @@
 
-<button class="btn {%if empty or recuperado.bop_delito_id != boletim.id %}btn-danger{% else %}btn-success{% endif %} rounded-top-0 w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom{{boletim.id}}" aria-controls="offcanvasBottom{{boletim.id}}">
-     {%if empty or recuperado.bop_delito_id != boletim.id %}Marcar como recuperado{% else %} Recuperado {% endif %}
+<button class="btn {% if recuperado.bop_delito_id == boletim.id and recuperado.bop_apresentacao and not recuperado.bop_entrega %}btn-success{% elif recuperado.bop_delito_id == boletim.id and recuperado.bop_entrega %}btn-primary{% elif empty or recuperado.bop_delito_id != boletim.id %}btn-danger{% endif%} rounded-top-0 w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom{{boletim.id}}" aria-controls="offcanvasBottom{{boletim.id}}">
+     {% if recuperado.bop_delito_id == boletim.id and recuperado.bop_apresentacao and not recuperado.bop_entrega %}Recuperado{% elif recuperado.bop_delito_id == boletim.id and recuperado.bop_entrega %}Devolvido{% elif empty or recuperado.bop_delito_id != boletim.id %}Marcar como recuperado{% endif%}
 </button>
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasBottom{{boletim.id}}" aria-labelledby="offcanvasBottomLabel{{boletim.id}}" style="height: auto !important;">
     <div class="offcanvas-header text-white bg-dark" data-bs-theme="dark">
         <h5 class="offcanvas-title" id="offcanvasBottomLabel{{boletim.id}}">
-            {%if empty or recuperado.bop_delito_id != boletim.id %}Marcar como recuperado{% else %}Recuperado <span class="text-secondary">#{{recuperado.id}}</span>{% endif %}
+            {% if recuperado.bop_delito_id == boletim.id and recuperado.bop_apresentacao and not recuperado.bop_entrega %}Recuperado#{{recuperado.id}}</span>{% elif recuperado.bop_delito_id == boletim.id and recuperado.bop_entrega %}Devolvido#{{recuperado.id}}</span>{% elif empty or recuperado.bop_delito_id != boletim.id %}Marcar como recuperado{% endif%}
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
