@@ -23,10 +23,8 @@
                         <input type="text" inputmode="numeric" oninput="mascara(this)" name="imei2" class="form-control" id="imei-input2" mask="imei" {% if recuperado.bop_delito_id == boletim.id and recuperado.imei2 %} value="{{recuperado.imei2}}" readonly {% elif recuperado.bop_delito_id == boletim.id and recuperado.imei1 != request.GET.imei %} value="{{request.GET.imei}}" readonly {% endif %}>
                     </div>
                 </div>
-                
                 <label for="id_bop_apresentacao">B.O Apresentação:</label>
                 <input class="form-control" mask="bop" inputmode="numeric" oninput="mascara(this)" type="text" name="bop_apresentacao" maxlength="19" required id="id_bop_apresentacao" {% if recuperado.bop_delito_id == boletim.id and recuperado.bop_apresentacao %} value="{{recuperado.bop_apresentacao}}" readonly{% endif %}>
-
                 <label for="id_instituicao">Instituicao Apresentante:</label>
                 <select name="instituicao" class="form-select" id="id_instituicao" required{% if recuperado.bop_delito_id == boletim.id and recuperado.id_inst_apresentacao %} readonly {% endif %}>
                     <option value="" {% if recuperado.bop_delito_id == boletim.id and not recuperado.id_inst_apresentacao %} selected {% endif %}></option>
@@ -37,15 +35,11 @@
                     <option value=5 {% if recuperado.bop_delito_id == boletim.id and recuperado.id_inst_apresentacao == 5 %} selected {% endif %}>GUARDA MUNICIPAL</option>
                     <option value=6 {% if recuperado.bop_delito_id == boletim.id and recuperado.id_inst_apresentacao == 6 %} selected {% endif %}>SEAP</option>
                 </select>
-                
                 <input type="hidden" name="id_bop" value="{{boletim.id}}">
                 <input type="hidden" name="pesquisa" value="{{request.GET.imei}}">
-
                 <label for="id_bop_entrega">B.O Entrega:</label>
-                <input class="form-control" mask="bop" oninput="mascara(this)" type="text" name="bop_entrega" maxlength="19" id="id_bop_entrega" {% if usuario.instituicao != 'PC'%}placeholder="Polícia Civil" readonly{% endif %} {% if recuperado.bop_delito_id == boletim.id and recuperado.bop_entrega %} value="{{recuperado.bop_entrega}}" readonly{% endif %}>
-                                    
+                <input class="form-control" mask="bop" oninput="mascara(this)" type="text" name="bop_entrega" maxlength="19" id="id_bop_entrega" {% if usuario.instituicao != 'PC'%}placeholder="Polícia Civil" readonly{% endif %} {% if recuperado.bop_delito_id == boletim.id and recuperado.bop_entrega %} value="{{recuperado.bop_entrega}}" readonly{% endif %}>                  
                 {% if recuperado.bop_delito_id == boletim.id and recuperado.data_manutencao%}<p class="text-secondary mt-3 text-end">Atualização: {{recuperado.data_manutencao|date:"d/m/Y H:i"|default_if_none:""}}</p>{% endif %}
-
                 {% if recuperado.bop_delito_id == boletim.id and not recuperado.bop_entrega or not recuperado.imei1 or not recuperado.imei2 or not recuperado.bop_apresentacao or not recuperado.id_inst_apresentacao%}<button type="submit" class="btn w-100 mt-4 btn-primary">Salvar</button>{% endif %}
             </form>
         </div>

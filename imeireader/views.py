@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 import pandas as pd
 import datetime
 from django.db.models import Q
+import base64
 
 
 @login_required
@@ -81,15 +82,6 @@ def exit(request):
 def home(request):
     return render(request, 'home.html')
 
-def test(request):
-    if request.method == 'POST':
-        img = request.POST.get('device_img')
-        print(img)
-        log = log_pesquisa(usuario=AuthUser.objects.get(id=request.user.id),pesquisa='0000000000000',bop_resultado=None, img_aparelho=img)
-        log.save()
-    return render(request, 'test.html')
-
-
 @csrf_exempt
 def resultado(request):
     if request.method == 'POST':
@@ -109,7 +101,8 @@ def resultado(request):
                 user = AuthUser.objects.get(username=user)
                 imei  = request.POST.get('imei')
 
-                img = request.POST.get('device_img')
+                imagem = request.FILES['device_img']
+                encoded_image = base64.b64encode(imagem.read())
 
                 log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
                 log_pm.save()
@@ -127,9 +120,9 @@ def resultado(request):
                                     print(consulta)
                                 resultado_log = model_to_dict(i,fields=['nro_bop'])
                                 list_bops.append(resultado_log['nro_bop'])
-                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm, img_aparelho=img)
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm, img_aparelho=encoded_image)
                         else:
-                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm, img_aparelho=img)
+                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm, img_aparelho=encoded_image)
                         log.save()
                         consultas = []
                         for c in consulta:
@@ -185,9 +178,8 @@ def resultadoGET(request):
             usuario = ModelUsuarios.objects.get(authuser=request.user.id)
             instituicao = Model_instituicao.objects.all()
             imei = request.GET.get('imei')
-
             if imei.isdigit() and is_luhn_valid(imei):
-                consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
+                consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro','id')
                 if consulta.count()>0:
                     for i in consulta:
                         # recuperacao = Imei_recuperacao.objects.filter(Q(imei1=imei)|Q(imei2=imei))
@@ -210,8 +202,8 @@ def resultadoGET(request):
                 erro = 'Ocorreu um erro desconhecido. Por favor contate a equipe de suporte'
                 log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None)
                 log.save()
-            except:
-                erro = 'Ocorreu um erro. Por favor verifique se o IMEI pesquisado está correto'
+            except Exception as error:
+                erro = 'Ocorreu um erro. Por favor verifique se o IMEI pesquisado está correto ' + error
             return render(request, 'resultado.html', {'erro': erro})
         # print(vars(consulta[0]))
         # print(vars(list_recup[0][0]))
