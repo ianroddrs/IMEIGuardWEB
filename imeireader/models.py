@@ -153,7 +153,7 @@ class log_pesquisa(models.Model):
     bop_resultado = models.CharField(max_length=20, blank=False, null=True)
     data_pesquisa = models.DateTimeField(auto_now_add=True)
     log_pm = models.ForeignKey(Log_Pm,models.DO_NOTHING,db_column='log_pm')
-    img_aparelho = models.CharField(blank=True, null=True)
+    img_aparelho = models.TextField(blank=True, null=True)
     
     class Meta:
         managed = False
