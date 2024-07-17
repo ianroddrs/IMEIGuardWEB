@@ -99,10 +99,10 @@ def resultado(request):
                 # 'num_token_id_requisicao':request.POST.get('csrfmiddlewaretoken')
                 }
                 user = AuthUser.objects.get(username=user)
-                imei  = request.POST.get('imei')
+                imei = request.POST.get('imei')
 
-                imagem = request.FILES['device_img']
-                encoded_image = base64.b64encode(imagem.read())
+                imagem = request.POST.get('device_img')
+                # encoded_image = base64.b64encode(imagem.read())
 
                 log_pm = Log_Pm(cpf=request.POST.get('cpf'),matricula=request.POST.get('matricula'),data_requisicao=request.POST.get('data_requisicao'),lotacao=request.POST.get('lotacao'))
                 log_pm.save()
@@ -120,9 +120,15 @@ def resultado(request):
                                     print(consulta)
                                 resultado_log = model_to_dict(i,fields=['nro_bop'])
                                 list_bops.append(resultado_log['nro_bop'])
-                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm, img_aparelho=encoded_image)
+                            try:
+                                log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm, img_aparelho=imagem)
+                            except:
+                                log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops,log_pm=pm,img_aparelho="error")
                         else:
-                            log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm, img_aparelho=encoded_image)
+                            try:
+                                log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm, img_aparelho=imagem)
+                            except:
+                                log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None,log_pm=pm,img_aparelho="error")
                         log.save()
                         consultas = []
                         for c in consulta:
