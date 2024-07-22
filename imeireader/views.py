@@ -179,7 +179,7 @@ def resultadoGET(request):
     if request.method == 'GET':
         try:
             list_bops = []
-            list_recup = []
+            resultado = []
             user = AuthUser.objects.get(id=request.user.id)
             usuario = ModelUsuarios.objects.get(authuser=request.user.id)
             instituicao = Model_instituicao.objects.all()
@@ -187,13 +187,8 @@ def resultadoGET(request):
             if imei.isdigit() and is_luhn_valid(imei):
                 consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro','id')
                 if consulta.count()>0:
-                    for i in consulta:
-                        # recuperacao = Imei_recuperacao.objects.filter(Q(imei1=imei)|Q(imei2=imei))
-                        recuperacao = Imei_recuperacao.objects.filter(Q(bop_delito=i.id)&Q(Q(imei1=imei)|Q(imei2=imei)))
-                        for x in recuperacao:
-                            list_recup.append(x)
-                        resultado_log = model_to_dict(i,fields=['nro_bop'])
-                        list_bops.append(resultado_log['nro_bop'])
+                    resultado = [{**model_to_dict(i), 'recuperacao': next((x for x in Imei_recuperacao.objects.filter(Q(bop_delito=i.id)&Q(Q(imei1=imei)|Q(imei2=imei))) if x.bop_delito_id == i.id), None)} for i in consulta]
+                    list_bops = [model_to_dict(i, fields=['nro_bop'])['nro_bop'] for i in consulta]
                     log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=list_bops).save()
                 else:
                     log = log_pesquisa(usuario=user,pesquisa=imei,bop_resultado=None).save()
@@ -211,9 +206,7 @@ def resultadoGET(request):
             except Exception as error:
                 erro = 'Ocorreu um erro. Por favor verifique se o IMEI pesquisado está correto ' + error
             return render(request, 'resultado.html', {'erro': erro})
-        # print(vars(consulta[0]))
-        # print(vars(list_recup[0][0]))
-        return render(request, 'resultado.html', {'resultado': consulta, 'list_recuperacao':list_recup,'usuario':usuario,'instituicao':instituicao})
+        return render(request, 'resultado.html', {'resultado':resultado,'usuario':usuario,'instituicao':instituicao})
 
 @login_required 
 def recuperacao(request):
