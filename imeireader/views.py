@@ -110,7 +110,7 @@ def resultado(request):
                 if imei.isdigit():
                     # if len(imei) == 15 and len(set(imei)) > 3:
                     if is_luhn_valid(imei) and len(imei) == 15:
-                        consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro')
+                        consulta = Imei_Data.objects.filter(Q(relato__icontains=imei) | Q(imei_recuperacao__imei1=imei) | Q(imei_recuperacao__imei2=imei)).order_by('-data_registro', 'id')
                         if consulta.count()>0:
                             for i in consulta:
                                 recuperacao = Imei_recuperacao.objects.filter(bop_delito=i.id)
@@ -185,7 +185,7 @@ def resultadoGET(request):
             instituicao = Model_instituicao.objects.all()
             imei = request.GET.get('imei')
             if imei.isdigit() and is_luhn_valid(imei):
-                consulta = Imei_Data.objects.filter(relato__icontains=f'{imei}').order_by('-data_registro','id')
+                consulta = Imei_Data.objects.filter(Q(relato__icontains=imei) | Q(imei_recuperacao__imei1=imei) | Q(imei_recuperacao__imei2=imei)).order_by('-data_registro', 'id')
                 if consulta.count()>0:
                     resultado = [{**model_to_dict(i), 'recuperacao': next((x for x in Imei_recuperacao.objects.filter(Q(bop_delito=i.id)&Q(Q(imei1=imei)|Q(imei2=imei))) if x.bop_delito_id == i.id), None)} for i in consulta]
                     list_bops = [model_to_dict(i, fields=['nro_bop'])['nro_bop'] for i in consulta]
