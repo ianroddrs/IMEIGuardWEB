@@ -31,6 +31,8 @@
         <div><strong>Data fato:</strong> {{boletim.data_fato|date:"d/m/Y"}}</div>
         <div><strong>{{boletim.atuacao}}: </strong> {{boletim.nome_pessoa|default_if_none:"Informação temporariamente indisponílvel"}}</div>
     </div>
+    {% if not forloop.first and not boletim.recuperacao %}
+    {% else %}
     <button class="btn {% if boletim.recuperacao.bop_apresentacao and not boletim.recuperacao.bop_entrega %}btn-success{% elif boletim.recuperacao.bop_entrega %}btn-primary{% elif not boletim.recuperacao %}btn-danger{% endif%} rounded-top-0 w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom{{boletim.id}}" aria-controls="offcanvasBottom{{boletim.id}}">
         {% if boletim.recuperacao.bop_apresentacao and not boletim.recuperacao.bop_entrega %}Recuperado{% elif boletim.recuperacao.bop_entrega %}Devolvido{% elif not boletim.recuperacao %}Marcar como recuperado{% endif%}
     </button>
@@ -77,6 +79,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endfor %}
 <a href="{% url 'home' %}" class="btn btn-danger mt-5 mx-2 mt-3">
